@@ -71,14 +71,18 @@ async function handleSummarizeClick(button, postText) {
       text: postText
     });
 
+    if (!response) {
+      throw new Error('No response from background script');
+    }
+
     if (response.success) {
       showSummaryPopup(response.summary, postText, response.method);
     } else {
       alert('Error: ' + (response.error || 'Failed to summarize'));
     }
   } catch (error) {
-    console.error('Error:', error);
-    alert('Error: ' + error.message);
+    console.error('Summarization error:', error);
+    alert('Error: ' + (error.message || 'An error occurred'));
   } finally {
     button.textContent = originalText;
     button.disabled = false;
@@ -116,7 +120,10 @@ function showSummaryPopup(summary, originalText, method) {
   });
 
   popup.querySelector('.copy-btn').addEventListener('click', () => {
-    navigator.clipboard.writeText(summary);
+    navigator.clipboard.writeText(summary).catch(error => {
+      console.error('Copy failed:', error);
+      alert('Failed to copy summary');
+    });
     const btn = popup.querySelector('.copy-btn');
     const originalBtn = btn.textContent;
     btn.textContent = '✓ Copied!';

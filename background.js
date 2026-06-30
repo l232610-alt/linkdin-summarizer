@@ -1,6 +1,8 @@
 // LinkedIn Post Summarizer - Background Service Worker
 // Hybrid approach: Local model by default, Ollama if available
 
+importScripts('utils/text-preprocessor.js');
+
 const OLLAMA_URL = 'http://localhost:11434';
 const DEFAULT_OLLAMA_MODEL = 'llama2';
 
@@ -17,7 +19,15 @@ setInterval(checkOllamaStatus, 30000);
 
 async function checkOllamaStatus() {
   try {
-    const response = await fetch(`${OLLAMA_URL}/api/tags`, { method: 'GET' });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2000);
+    
+    const response = await fetch(`${OLLAMA_URL}/api/tags`, { 
+      method: 'GET',
+      signal: controller.signal
+    });
+    
+    clearTimeout(timeoutId);
     ollamaAvailable = response.ok;
   } catch (error) {
     ollamaAvailable = false;
@@ -147,7 +157,15 @@ async function summarizeWithLocal(text) {
 
 async function getStatus() {
   try {
-    const response = await fetch(`${OLLAMA_URL}/api/tags`, { timeout: 2000 });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2000);
+    
+    const response = await fetch(`${OLLAMA_URL}/api/tags`, { 
+      signal: controller.signal 
+    });
+    
+    clearTimeout(timeoutId);
+    
     if (response.ok) {
       const data = await response.json();
       const models = data.models ? data.models.map(m => m.name) : [];
