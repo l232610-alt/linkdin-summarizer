@@ -5,51 +5,88 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function setupEventListeners() {
-  document.getElementById('mode-select').addEventListener('change', updateModeUI);
-  document.getElementById('save-settings').addEventListener('click', saveSettings);
+  const modeSelect = document.getElementById('mode-select');
+  const saveSettingsBtn = document.getElementById('save-settings');
+  
+  if (modeSelect) {
+    modeSelect.addEventListener('change', updateModeUI);
+  }
+  
+  if (saveSettingsBtn) {
+    saveSettingsBtn.addEventListener('click', saveSettings);
+  }
 }
 
 function updateModeUI() {
   const mode = document.getElementById('mode-select').value;
   const ollamaModelSetting = document.getElementById('ollama-model-setting');
-  ollamaModelSetting.style.display = mode === 'ollama' ? 'block' : 'none';
+  if (ollamaModelSetting) {
+    ollamaModelSetting.style.display = mode === 'ollama' ? 'block' : 'none';
+  }
 }
 
 function loadSettings() {
   chrome.storage.local.get(['preferenceMode', 'ollamaModel'], (result) => {
-    if (result.preferenceMode) {
-      document.getElementById('mode-select').value = result.preferenceMode;
+    const modeSelect = document.getElementById('mode-select');
+    const modelSelect = document.getElementById('model-select');
+    
+    if (modeSelect && result.preferenceMode) {
+      modeSelect.value = result.preferenceMode;
     }
-    if (result.ollamaModel) {
-      document.getElementById('model-select').value = result.ollamaModel;
+    
+    if (modelSelect && result.ollamaModel) {
+      modelSelect.value = result.ollamaModel;
     }
+    
     updateModeUI();
   });
 }
 
 function saveSettings() {
-  const mode = document.getElementById('mode-select').value;
-  const model = document.getElementById('model-select').value;
+  const modeSelect = document.getElementById('mode-select');
+  const modelSelect = document.getElementById('model-select');
+  
+  if (!modeSelect || !modelSelect) {
+    console.error('Settings elements not found');
+    return;
+  }
+  
+  const mode = modeSelect.value;
+  const model = modelSelect.value;
+  
   chrome.storage.local.set({ preferenceMode: mode, ollamaModel: model }, () => {
     const btn = document.getElementById('save-settings');
-    const originalText = btn.textContent;
-    btn.textContent = '✓ Saved!';
-    setTimeout(() => {
-      btn.textContent = originalText;
-    }, 2000);
+    if (btn) {
+      const originalText = btn.textContent;
+      btn.textContent = '✓ Saved!';
+      setTimeout(() => {
+        btn.textContent = originalText;
+      }, 2000);
+    }
   });
 }
 
 async function checkStatuses() {
   try {
     const response = await chrome.runtime.sendMessage({ action: 'getStatus' });
+    
+    if (!response) {
+      throw new Error('No response from background');
+    }
+    
     const ollamaStatus = document.getElementById('ollama-status');
     const ollamaModels = document.getElementById('ollama-models');
+    
+    if (!ollamaStatus) {
+      console.error('Status element not found');
+      return;
+    }
     
     if (response.ollamaRunning) {
       ollamaStatus.textContent = '✅ Running';
       ollamaStatus.className = 'status-badge online';
-      if (response.models && response.models.length > 0) {
+      
+      if (ollamaModels && response.models && response.models.length > 0) {
         ollamaModels.style.display = 'block';
         ollamaModels.textContent = '📦 Available: ' + response.models.join(', ');
       }
@@ -59,6 +96,11 @@ async function checkStatuses() {
     }
   } catch (error) {
     console.error('Status check failed:', error);
+    const ollamaStatus = document.getElementById('ollama-status');
+    if (ollamaStatus) {
+      ollamaStatus.textContent = '❌ Error';
+      ollamaStatus.className = 'status-badge offline';
+    }
   }
 }
 
