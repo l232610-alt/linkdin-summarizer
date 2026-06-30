@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LinkedIn Summarizer</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="popup-container">
+    <div class="popup-header">
+      <h2>✨ LinkedIn Summarizer</h2>
+      <p class="subtitle">Local AI • Zero Setup • 100% Private</p>
+    </div>
+    
+    <div class="popup-content">
+      <div class="info-section">
+        <h3>⚡ How It Works</h3>
+        <ul>
+          <li>✅ <strong>Works instantly</strong> - no setup required</li>
+          <li>🔒 <strong>100% private</strong> - summaries never leave your device</li>
+          <li>💰 <strong>Free forever</strong> - no API costs, no tracking</li>
+          <li>🚀 <strong>Get better summaries</strong> by installing Ollama (optional)</li>
+        </ul>
+      </div>
+
+      <div class="settings-section">
+        <h3>⚙️ Settings</h3>
+        
+        <div class="setting">
+          <label for="mode-select">Mode:</label>
+          <select id="mode-select">
+            <option value="auto">🤖 Auto (Best Available)</option>
+            <option value="local">💻 Local Only</option>
+            <option value="ollama">🚀 Ollama (if running)</option>
+          </select>
+        </div>
+
+        <div class="setting" id="ollama-model-setting" style="display: none;">
+          <label for="model-select">Ollama Model:</label>
+          <select id="model-select">
+            <option value="llama2">Llama 2</option>
+            <option value="mistral">Mistral</option>
+            <option value="neural-chat">Neural Chat</option>
+            <option value="phi">Phi</option>
+          </select>
+        </div>
+
+        <button id="save-settings" class="btn-primary">💾 Save Settings</button>
+      </div>
+
+      <div class="status-section">
+        <h3>📊 Status</h3>
+        <div class="status-item">
+          <span>Local AI:</span>
+          <div class="status-badge online">✓ Ready</div>
+        </div>
+        <div class="status-item">
+          <span>Ollama:</span>
+          <div id="ollama-status" class="status-badge checking">⟳ Checking...</div>
+        </div>
+        <div id="ollama-models" class="status-detail" style="display: none;"></div>
+      </div>
+
+      <div class="info-box">
+        <strong>💡 Tip:</strong> Install Ollama for better summaries!
+        <a href="https://ollama.ai" target="_blank">Learn more →</a>
+      </div>
+    </div>
+
+    <div class="popup-footer">
+      <a href="https://ollama.ai" target="_blank" title="Download Ollama">📥 Ollama</a>
+      <a href="https://github.com/l232610-alt/linkdin-summarizer" target="_blank" title="GitHub">⭐ GitHub</a>
+      <a href="https://github.com/l232610-alt/linkdin-summarizer/issues" target="_blank" title="Report issues">🐛 Issues</a>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
